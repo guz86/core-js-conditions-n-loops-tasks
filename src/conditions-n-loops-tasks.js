@@ -519,8 +519,73 @@ function shuffleChar(str, iterations) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  function getDigitArray(num) {
+    let originalNumber = num;
+    const digits = [];
+
+    while (originalNumber > 0) {
+      const digit = originalNumber % 10;
+      digits.unshift(digit);
+      originalNumber = (originalNumber - digit) / 10;
+    }
+    return digits;
+  }
+
+  function findOurDigit(arr) {
+    for (let i = arr.length - 2; i >= 0; i -= 1) {
+      if (arr[i] < arr[i + 1]) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function findSmallestDigitPosition(arr, position) {
+    const subarray = [];
+    for (let i = position + 1; i < arr.length; i += 1) {
+      subarray.push(arr[i]);
+    }
+
+    let smallestDigit = Number.POSITIVE_INFINITY;
+    let smallestDigitPosition = -1;
+    for (let i = 0; i < subarray.length; i += 1) {
+      const digit = subarray[i];
+      if (digit > arr[position] && digit < smallestDigit) {
+        smallestDigit = digit;
+        smallestDigitPosition = position + 1 + i;
+      }
+    }
+    return smallestDigitPosition;
+  }
+
+  function swapElements(arr, position1, position2) {
+    const tempArray = arr;
+    const temp = tempArray[position1];
+    tempArray[position1] = tempArray[position2];
+    tempArray[position2] = temp;
+
+    return tempArray;
+  }
+
+  function sortFromPosition(arr, position) {
+    const tempArray = arr;
+    const subarray = [];
+    for (let i = position + 1; i < arr.length; i += 1) {
+      subarray.push(arr[i]);
+    }
+    subarray.sort((a, b) => a - b);
+    tempArray.splice(position + 1, subarray.length, ...subarray);
+    return tempArray;
+  }
+
+  const digitArray = getDigitArray(number);
+  const findDigit = findOurDigit(digitArray);
+  const findRightSmallDigit = findSmallestDigitPosition(digitArray, findDigit);
+  swapElements(digitArray, findDigit, findRightSmallDigit);
+  const result = sortFromPosition(digitArray, findDigit);
+
+  return parseInt(result.join(''), 10);
 }
 
 module.exports = {
