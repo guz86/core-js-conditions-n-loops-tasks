@@ -420,7 +420,7 @@ function rotateMatrix(matrix) {
  * Take into account that the array can be very large. Consider how you can optimize your solution.
  * In this task, the use of methods of the Array and String classes is not allowed.
  *
- * @param {number[]} arr - The array to sort.
+ * @param {number[]} result - The array to sort.
  * @return {number[]} The sorted array.
  *
  * @example:
@@ -429,21 +429,30 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  const arrRef = arr;
-  for (let i = 0; i < arrRef.length - 1; i += 1) {
-    let minIndex = i;
-    for (let j = i + 1; j < arrRef.length; j += 1) {
-      if (arrRef[j] < arrRef[minIndex]) {
-        minIndex = j;
+  const result = arr;
+  const partition = (low, high) => {
+    const pivot = result[high];
+    let i = low - 1;
+    for (let j = low; j < high; j += 1) {
+      if (result[j] <= pivot) {
+        i += 1;
+        [result[i], result[j]] = [result[j], result[i]];
       }
     }
-    if (minIndex !== i) {
-      const temp = arrRef[i];
-      arrRef[i] = arrRef[minIndex];
-      arrRef[minIndex] = temp;
+    [result[i + 1], result[high]] = [result[high], result[i + 1]];
+    return i + 1;
+  };
+
+  const quickSort = (low, high) => {
+    if (low < high) {
+      const pi = partition(low, high);
+      quickSort(low, pi - 1);
+      quickSort(pi + 1, high);
     }
-  }
-  return arrRef;
+  };
+
+  quickSort(0, result.length - 1);
+  return result;
 }
 
 /**
